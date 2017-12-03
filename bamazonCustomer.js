@@ -7,7 +7,7 @@ var connection = mysql.createConnection({
     // Your username
     user: "root",
     // Your password
-    password: "pS159iS218",
+    password: "!pS159iS218",
     database: "bamazon"
 });
 
@@ -51,8 +51,6 @@ function buyProduct() {
             }
         }
     ]).then(function(answer) {
-        console.log(answer.productID);
-        console.log(answer.quantity);
         checkAvailability(answer.productID, answer.quantity);
     });
 };
@@ -62,9 +60,18 @@ function checkAvailability(prodID, quantity) {
     connection.query(query, { item_id: prodID }, function(err, res) {
         console.log(res[0].stock_quantity);
         if ((res[0].stock_quantity) < quantity) {
-            console.log("The product you are searching for is not is not in stock");
+            console.log("The item you are looking for is not in stock. Please select another item.");
         } else {
-            console.log("sure " + ((res[0].stock_quantity) - quantity));
+            ((res[0].stock_quantity) - quantity)
+            checkout();
+            // console.log(((res[0].stock_quantity) - quantity));
         }
+    });
+};
+
+function checkout(prodID, quantity) {
+    var query = "SELECT products.price FROM products WHERE ?";
+    connection.query(query, { item_id: prodID }, function(err, res) {
+        console.log("Great! Your total comes out to " + ((res[0].price) * quantity));
     });
 };

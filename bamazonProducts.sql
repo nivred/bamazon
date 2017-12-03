@@ -22,3 +22,5 @@ INSERT INTO `bamazon`.`products` (`product_name`, `department_name`, `price`, `s
 INSERT INTO `bamazon`.`products` (`product_name`, `department_name`, `price`, `stock_quantity`) VALUES ('Poisonfeather', 'Books', '24.95', '7');
 INSERT INTO `bamazon`.`products` (`product_name`, `department_name`, `price`, `stock_quantity`) VALUES ('The Devils Game', 'Books', '19.95', '33');
 INSERT INTO `bamazon`.`products` (`product_name`, `department_name`, `price`, `stock_quantity`) VALUES ('Bath Robe', 'Clothing', '39.99', '74');
+
+SELECT * FROM products;
