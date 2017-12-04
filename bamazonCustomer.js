@@ -5,9 +5,7 @@ var Table = require('cli-table');
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
-    // Your username
     user: "root",
-    // Your password
     password: "!pS159iS218",
     database: "bamazon"
 });
@@ -22,7 +20,6 @@ function displayProducts() {
     connection.query(query, function(err, res) {
         var table = new Table({
             head: ["Product ID ", "Product ", "Price "]
-        //   , colWidths: [100, 1000, 200]
         });
         for (var i = 0; i < res.length; i++) {
             table.push(
@@ -89,7 +86,6 @@ function checkout(prodID, quantity) {
     connection.query(query, { item_id: prodID }, function(err, res) {       
         console.log("Thank you! Your total is $" + ((res[0].price).toFixed(2) * quantity));
         connection.end(function(err) {
-
         });
     });
 };
