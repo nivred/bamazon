@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var Table = require('cli-table');
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -19,12 +20,19 @@ connection.connect(function(err) {
 function displayProducts() {
     var query = "SELECT products.item_id, products.product_name, products.price FROM products";
     connection.query(query, function(err, res) {
+        var table = new Table({
+            head: ["Product ID ", "Product ", "Price "]
+        //   , colWidths: [100, 1000, 200]
+        });
         for (var i = 0; i < res.length; i++) {
-            console.log("Product ID: " + res[i].item_id + " || Product: " + res[i].product_name + " || Price: " + res[i].price);
+            table.push(
+                [res[i].item_id, res[i].product_name, res[i].price]
+            );
         }
+        console.log(table.toString());
         buyProduct();
     });
-}
+};
 
 function buyProduct() {
     inquirer.prompt([
@@ -58,20 +66,30 @@ function buyProduct() {
 function checkAvailability(prodID, quantity) {
     var query = "SELECT products.stock_quantity FROM products WHERE ?";
     connection.query(query, { item_id: prodID }, function(err, res) {
-        console.log(res[0].stock_quantity);
         if ((res[0].stock_quantity) < quantity) {
-            console.log("The item you are looking for is not in stock. Please select another item.");
+            console.log("Insufficient quantity! There are only " + (res[0].stock_quantity) + " of that item left in stock");
+            buyProduct();
         } else {
-            ((res[0].stock_quantity) - quantity)
-            checkout();
-            // console.log(((res[0].stock_quantity) - quantity));
+            newInventory = (res[0].stock_quantity) - quantity;
+            updateInventory(prodID, newInventory);
+            checkout(prodID, quantity);
         }
+    });
+};
+
+function updateInventory(prodID, quantity) {
+    var query = "UPDATE products SET stock_quantity = ? WHERE item_id = ?";
+    connection.query(query, [quantity, prodID], function(err, res) {
+        console.log("Item stock has been updated");
     });
 };
 
 function checkout(prodID, quantity) {
     var query = "SELECT products.price FROM products WHERE ?";
-    connection.query(query, { item_id: prodID }, function(err, res) {
-        console.log("Great! Your total comes out to " + ((res[0].price) * quantity));
+    connection.query(query, { item_id: prodID }, function(err, res) {       
+        console.log("Thank you! Your total is $" + ((res[0].price).toFixed(2) * quantity));
+        connection.end(function(err) {
+
+        });
     });
 };
